@@ -42,6 +42,8 @@ pip install -e .
 python main.py
 ```
 
+**Note:** The program saves the weather summary to `data/processed/summary.json`.
+
 ## Test
 
 ```bash
@@ -50,7 +52,7 @@ python -m unittest discover -s tests
 
 ## Layout
 
-- `models.py`: Contains the WeatherRecord class. It handles weather records and invalid values, so other modules can focus on their own tasks.
+- `models.py`: Contains the WeatherRecord class. It stores individual weather records and handles invalid values, so other modules can focus on their own tasks.
 - `sources.py`: Contains the WeatherSource class. It gets weather data from the API, so data collection is separate from calculations.
 - `aggregations.py`: Contains the Aggregation class and its subclasses. It calculates weather statistics, so calculations are kept in one module.
 - `report.py`: Contains functions to create and save the final summary. It keeps reporting separate from calculations.
@@ -62,14 +64,12 @@ python -m unittest discover -s tests
 
 | Lab 02 function | Lab 03 location |
 |---|---|
-| `fetch_weather_records()` | `sources.py` → `WeatherSource.fetch()` |
-| `calculate_daily_temperature()` | `aggregations.py` → `TemperatureAggregation.calculate()` |
-| `calculate_daily_precipitation()` | `aggregations.py` → `PrecipitationAggregation.calculate()` |
-| `build_summary()` | `report.py` → `build_summary()` |
-| `write_summary()` | `report.py` → `write_summary()` |
-| `main()` | `main.py` → `main()` |
-
-**Note:** The unique date calculation moved from `calculate_daily_temperature()` to `build_summary()` in `report.py`.
+| `fetch_weather_records()` | `sources.py` → `WeatherSource.fetch()`. Fetches data and creates `WeatherRecord` objects. |
+| `calculate_daily_temperature()` | `aggregations.py` → `TemperatureAggregation.calculate()`. Calculates daily temperatures, while invalid value handling moved to `WeatherRecord` in `models.py`. |
+| `calculate_daily_precipitation()` | `aggregations.py` → `PrecipitationAggregation.calculate()`. Calculates daily precipitation, while invalid value handling moved to `WeatherRecord` in `models.py`. |
+| `build_summary()` | `report.py` → `build_summary()`. Also counts unique dates because this is part of the overall summary. |
+| `write_summary()` | `report.py` → `write_summary()`. Saves the final summary as a JSON file. |
+| `main()` | `main.py` → `main()`. Connects the modules and runs the program. |
 
 ## Design choices
 
@@ -77,7 +77,7 @@ The WeatherRecord class represents one hourly weather record. It also handles mi
 
 The WeatherSource class gets weather data from the API and creates WeatherRecord objects. This keeps data collection separate from calculations.
 
-The Aggregation class is the base class for weather calculations. It provides a common calculate() method that returns an empty dictionary by default.
+The Aggregation class is the base class for weather calculations. It provides a common calculate() method that returns an empty dictionary by default. This allows different aggregation subclasses to use the same method name.
 
 TemperatureAggregation and PrecipitationAggregation inherit from Aggregation. They both override the calculate() method. TemperatureAggregation calculates daily minimum, maximum, and mean temperatures. PrecipitationAggregation calculates daily total precipitation.
 
@@ -90,3 +90,4 @@ To add another subclass, I would create a new class that inherits from Aggregati
 - Running the main program requires an internet connection, but the unit tests can run offline.
 - The program counts unique dates but does not remove duplicate hourly weather records.
 - The zip() function stops at the shortest list. If the API returns lists with different lengths, some records may be skipped. I would add a check to make sure the lists have the same length.
+- Floating-point calculations may produce long decimal values, such as 10.799999999999999 instead of 10.8. I would use round() to make the results easier to read.
