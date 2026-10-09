@@ -64,12 +64,12 @@ python -m unittest discover -s tests
 
 | Lab 02 function | Lab 03 location |
 |---|---|
-| `fetch_weather_records()` | `sources.py` → `WeatherSource.fetch()`. Fetches data and creates `WeatherRecord` objects. |
-| `calculate_daily_temperature()` | `aggregations.py` → `TemperatureAggregation.calculate()`. Calculates daily temperatures, while invalid value handling moved to `WeatherRecord` in `models.py`. |
-| `calculate_daily_precipitation()` | `aggregations.py` → `PrecipitationAggregation.calculate()`. Calculates daily precipitation, while invalid value handling moved to `WeatherRecord` in `models.py`. |
-| `build_summary()` | `report.py` → `build_summary()`. Also counts unique dates because this is part of the overall summary. |
-| `write_summary()` | `report.py` → `write_summary()`. Saves the final summary as a JSON file. |
-| `main()` | `main.py` → `main()`. Connects the modules and runs the program. |
+| `fetch_weather_records()` | `fetch()` in the `WeatherSource` class in `sources.py`. It gets weather data and creates `WeatherRecord` objects. |
+| `calculate_daily_temperature()` | `calculate()` in the `TemperatureAggregation` class in `aggregations.py`. It calculates daily temperatures. Invalid values are now handled by `WeatherRecord` in `models.py`. |
+| `calculate_daily_precipitation()` | `calculate()` in the `PrecipitationAggregation` class in `aggregations.py`. It calculates daily precipitation. Invalid values are now handled by `WeatherRecord` in `models.py`. |
+| `build_summary()` | `build_summary()` in `report.py`. It creates the final summary and counts unique dates. |
+| `write_summary()` | `write_summary()` in `report.py`. It saves the summary to a JSON file. |
+| `main()` | `main()` in `main.py`. It connects the modules and runs the program. |
 
 ## Design choices
 
